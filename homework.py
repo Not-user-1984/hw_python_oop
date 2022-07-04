@@ -1,3 +1,5 @@
+from typing import Dict, Type
+
 
 class InfoMessage:
     """Информационное сообщение о тренировке."""
@@ -84,9 +86,9 @@ class Running(Training):
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
 
-    coeff_1 = 0.035
-    coeff_2 = 2
-    coeff_3 = 0.029
+    coeff_1: float = 0.035
+    coeff_2: int = 2
+    coeff_3: float = 0.029
 
     def get__info_name(self) -> str:
         """Получить название тренировки."""
@@ -115,9 +117,9 @@ class SportsWalking(Training):
 
 class Swimming(Training):
     """Тренировка: плавание."""
-    coeff_1_ = 1.1
-    coeff_2_ = 2
-    LEN_STEP = 1.38
+    coeff_1_: float = 1.1
+    coeff_2_: int = 2
+    LEN_STEP: float = 1.38
 
     def get__info_name(self) -> str:
         """Получить название тренировки."""
@@ -149,15 +151,10 @@ class Swimming(Training):
 
 def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
-    parameters_train = {
-        'SWM': Swimming,
-        'RUN': Running,
-        'WLK': SportsWalking
-    }
-    if workout_type in parameters_train:
-        return parameters_train[workout_type](*data)
-    else:
-        raise ValueError("Тренировка не найдена")
+    dict_training: Dict[str, Type[Training]] = {'SWM': Swimming,
+                                                'RUN': Running,
+                                                'WLK': SportsWalking}
+    return dict_training[workout_type](*data)
 
 
 def main(training: Training) -> None:
