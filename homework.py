@@ -21,24 +21,20 @@ class InfoMessage:
     )
 
     def get_message(self) -> str:
-        data = asdict(self)
-        return self.MASSAGE.format(*data.values())
+        """Строка сообщения."""
+        return self.MASSAGE.format(*asdict(self).values())
 
 
+@dataclass
 class Training:
     """Базовый класс тренировки."""
-    LEN_STEP: float = 0.65
-    M_IN_KM: int = 1000
-    M_IN_MIN: int = 60
+    action: int
+    duration: float
+    weight: float
 
-    def __init__(
-            self,
-            action: int,
-            duration: float,
-            weight: float) -> None:
-        self.action = action
-        self.duration = duration
-        self.weight = weight
+    LEN_STEP = 0.65  # Конфликт аннотаций с Дат классами,
+    M_IN_KM = 1000   # если есть способ указать Дат.классам что брать в инит,
+    M_IN_MIN = 60    # то укажите направление ;)
 
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
@@ -55,7 +51,7 @@ class Training:
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
         return InfoMessage(
-            self.__class__.__name__,
+            type(self).__name__,
             self.duration,
             self.get_distance(),
             self.get_mean_speed(),
@@ -69,28 +65,24 @@ class Running(Training):
     cf_run_2: int = 20
 
     def get_spent_calories(self) -> float:
+        """Получить количество затраченных калорий."""
         return (
             (self.cf_run_1 * self.get_mean_speed() - self.cf_run_2)
             * self.weight / self.M_IN_KM * self.duration * self.M_IN_MIN
         )
 
 
+@dataclass
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
+    height: float
+
     cf_sw_1: float = 0.035
     cf_sw_2: int = 2
     cf_sw_3: float = 0.029
 
-    def __init__(
-            self,
-            action: int,
-            duration: float,
-            weight: float,
-            height: float) -> None:
-        super().__init__(action, duration, weight)
-        self.height = height
-
     def get_spent_calories(self) -> float:
+        """Получить количество затраченных калорий."""
         return (
             (self.cf_sw_1 * self.weight + (self.get_mean_speed()
              ** self.cf_sw_2 // self.height) * self.cf_sw_3 * self.weight)
@@ -98,29 +90,24 @@ class SportsWalking(Training):
         )
 
 
+@dataclass
 class Swimming(Training):
     """Тренировка: плавание."""
+    length_pool: float
+    count_pool: float
+
     LEN_STEP: float = 1.38
     cf_sm_1: float = 1.1
     cf_sm_2: int = 2
 
-    def __init__(
-            self,
-            action: int,
-            duration: float,
-            weight: float,
-            length_pool: float,
-            count_pool: float) -> None:
-        super().__init__(action, duration, weight)
-        self.length_pool = length_pool
-        self.count_pool = count_pool
-
     def get_mean_speed(self) -> float:
+        """Получить среднюю скорость движения."""
         return (
             self.length_pool * self.count_pool / self.M_IN_KM / self.duration
         )
 
     def get_spent_calories(self) -> float:
+        """Получить количество затраченных калорий."""
         return (
             (self.get_mean_speed() + self.cf_sm_1)
             * self.cf_sm_2 * self.weight
@@ -129,15 +116,16 @@ class Swimming(Training):
 
 def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
-    try:
-        training: Dict[str, Type[Training]] = {
-            'SWM': Swimming,
-            'RUN': Running,
-            'WLK': SportsWalking
-        }
-        return training[workout_type](*data)
-    except KeyError:
-        raise "Тренировка не найдена"
+    name_training: Dict[str, Type[Training]] = {
+        'SWM': Swimming,
+        'RUN': Running,
+        'WLK': SportsWalking
+    }
+
+    if workout_type in name_training:
+        return name_training[workout_type](*data)
+    else:
+        raise KeyError("Тренировка не найдена")
 
 
 def main(training: Training) -> None:
