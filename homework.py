@@ -75,15 +75,15 @@ class Running(Training):
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
     height: float
-    COEF_SW_ONE: ClassVar[float] = 0.035
-    COEF_SW_TWO: ClassVar[int] = 2
-    COEF_SW_THREE: ClassVar[float] = 0.029
+    CF_SW_ONE: ClassVar[float] = 0.035
+    CF_SW_TWO: ClassVar[int] = 2
+    CF_SW_THR: ClassVar[float] = 0.029
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
         return (
-            (self.COEF_SW_ONE * self.weight + (self.get_mean_speed()
-             ** self.COEF_SW_TWO // self.height) * self.COEF_SW_THREE * self.weight)
+            (self.CF_SW_ONE * self.weight + (self.get_mean_speed()
+             ** self.CF_SW_TWO // self.height) * self.CF_SW_THR * self.weight)
             * self.duration * self.M_IN_MIN
         )
 
