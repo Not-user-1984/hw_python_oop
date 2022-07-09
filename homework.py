@@ -31,6 +31,7 @@ class Training:
     action: int
     duration: float
     weight: float
+
     LEN_STEP: ClassVar[float] = 0.65
     M_IN_KM: ClassVar[int] = 1000
     M_IN_MIN: ClassVar[int] = 60
@@ -45,7 +46,7 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        raise NotImplementedError('переопределите метод в дочерних классах')
+        raise NotImplementedError('переопределите метод в class Training.')
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -60,6 +61,7 @@ class Training:
 
 class Running(Training):
     """Тренировка: бег."""
+
     COEF_RUN_ONE: ClassVar[int] = 18
     COEF_RUN_TWO: ClassVar[int] = 20
 
@@ -75,6 +77,7 @@ class Running(Training):
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
     height: float
+
     CF_SW_ONE: ClassVar[float] = 0.035
     CF_SW_TWO: ClassVar[int] = 2
     CF_SW_THR: ClassVar[float] = 0.029
@@ -136,7 +139,6 @@ if __name__ == '__main__':
         ('SWM', [720, 1, 80, 25, 40]),
         ('RUN', [15000, 1, 75]),
         ('WLK', [9000, 1, 75, 180]),
-        # ('FOO', [9000, 1, 75, 180]),
     ]
 
     for workout_type, data in packages:
